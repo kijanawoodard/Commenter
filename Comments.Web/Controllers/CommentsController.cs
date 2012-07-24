@@ -21,7 +21,7 @@ namespace Comments.Web.Controllers
                 var comments =
                     session
                         .Query<Comment>()
-                        .Where(x => x.PostId == "blogs/1/posts/1");
+                        .Where(x => x.PostId == id);
 
                 return comments;
             }
