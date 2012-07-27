@@ -1,0 +1,97 @@
+﻿@using Comments.Web
+@model System.Collections.Generic.List<Comments.Web.ViewModels.ThreadedComment>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+    <div class="new_comment">
+        <textarea rows=5 cols=80>dsds</textarea>
+        <button>Submit</button>
+    </div>
+    <div class="comments" data-bind="template: 'mytemplate'"></div>
+</div>
+
+@*<pre data-bind="text: ko.toJSON($root, null, 3)" class="ko_output"></pre>*@
+
+<textarea id="mytemplate" style="display:none">
+    <ul>
+        {{each $data}}
+        <li>
+            ${who} (${when}) <br/>
+            ${what} 
+            <button class="reply">Reply</button>
+            <div class="new_comment_reply">
+                <textarea rows=5 cols=20 />
+                <button>Submit</button>
+            </div>
+            {{if replies}}
+                <div>Replies:</div>
+                <div class="replies" data-bind="template: {name: 'mytemplate', data: replies}"></div>
+            {{/if}}
+        </li>
+        {{/each}}
+    </ul>
+
+</textarea>
+
+<script type="text/html" id="template">
+    <ul>
+        {{each $data}}
+        <li>
+            ${who} (${when}) <br/>
+            ${what}
+            {{if replies}}
+                <div>Replies:</div>
+                <div class="replies" data-bind="template: {name: 'template', data: replies}"></div>
+            {{/if}}
+        </li>
+        {{/each}}
+    </ul>
+</script>
+
+<script>
+    var comments = '@Html.Raw(Model.ToJson())';
+</script>
+
+<script>
+    var viewModel = ko.mapping.fromJSON(comments);
+    ko.applyBindings(viewModel);
+
+    $(document).ready(function () {
+        $.ajaxSetup({
+            cache: false
+        });
+
+        $('.comments').on('click', 'button.reply', function (e) {
+            e.preventDefault();
+            $(this)
+                .hide()
+                .siblings('.new_comment_reply')
+                .show('slide');
+        });
+
+        $('.new_comment').on('click', 'button', function (e) {
+            e.preventDefault();
+            var data = { "postId": "blogs/1/posts/1", "what": $('.new_comment textarea').val(), "who" : "me", "when" : Date.now() };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Post")',
+                dataType: "json",
+                contentType: 'application/json, charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log("Comment saved successfully!!!");
+                    viewModel.push(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+            });
+        });
+    });
+</script>
+

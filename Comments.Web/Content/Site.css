@@ -59,3 +59,8 @@ textarea {
 .validation-summary-valid {
     display: none;
 }
+
+
+ul {  list-style: none;}
+
+.comments .new_comment_reply { display: none; }
