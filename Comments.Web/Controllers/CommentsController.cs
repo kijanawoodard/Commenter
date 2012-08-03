@@ -5,6 +5,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Xml.Serialization;
 using Commenter.Documents;
+using Commenter.Messages;
 using Commenter.Messages.Commands;
 using Comments.Web.Indexes;
 using Comments.Web.ViewModels;

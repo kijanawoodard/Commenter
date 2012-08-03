@@ -68,7 +68,7 @@ namespace Comments.Web
             IndexCreation.CreateIndexes(typeof(CommentIndex).Assembly, CommentsController.DocumentStore);
 
             CommentsController.Bus =
-                Configure.WithWeb()
+                Configure.With()
                     .DefaultBuilder()
     //                .ForMvc()
                     .JsonSerializer()
@@ -79,6 +79,7 @@ namespace Comments.Web
                     .UnicastBus()
                         .ImpersonateSender(false)
                     .CreateBus()
+                    // install if you need to.
                     .Start(() => Configure.Instance.ForInstallationOn<NServiceBus.Installation.Environments.Windows>().Install());
         }
     }

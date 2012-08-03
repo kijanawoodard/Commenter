@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Commenter.Documents;
 using Commenter.Messages.Commands;
+using Commenter.Messages.Events;
 using NServiceBus;
 using Raven.Client;
 
@@ -11,27 +9,29 @@ namespace Commenter.Handlers
 {
     class CreateCommentHandler : IHandleMessages<CreateComment>
     {
-        private readonly IDocumentSession _session;
+        public IBus Bus { get; set; }
+        public IDocumentSession Session { get; set; }
 
-        public CreateCommentHandler(IDocumentSession session)
-        {
-            _session = session;
-        }
-
-        public void Handle(CreateComment message)
+        public void Handle(CreateComment command)
         {
             var comment =
                 new Comment
                     {
-                        PostId = message.PostId,
-                        Who = message.Who,
+                        PostId = command.PostId,
+                        Who = command.Who,
                         When = DateTime.UtcNow,
-                        What = message.What
+                        What = command.What
                     };
 
-            _session.Store(comment);
+            Session.Store(comment);
             
-            Console.WriteLine("Comment Saved");
+            Bus.Publish<ICommentCreated>(m =>
+                                             {
+                                                 m.CommentId = comment.Id;
+                                                 m.UserId = comment.Who;
+                                             });
+
+            Console.WriteLine("Comment Saved: {0}", comment);
         }
     }
 }
