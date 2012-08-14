@@ -22,11 +22,11 @@ namespace Comments.Web.Indexes
 
         public CommentIndex()
         {
-            Map = foos => from foo in foos
+            Map = comments => from comment in comments
                           select new
                                      {
-                                         foo.PostId,
-                                         CommentIds = new string[] {foo.Id},
+                                         comment.PostId,
+                                         CommentIds = new string[] {comment.Id},
                                      };
 
             Reduce = results => from result in results
